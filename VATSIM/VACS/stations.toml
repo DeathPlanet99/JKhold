@@ -1,0 +1,341 @@
+[stations]
+selected_profile = "EPWW_RADAR"
+
+[stations.profiles.EPWW_RADAR]
+include = [
+    "EP*",
+    "EDMM*G*CTR",
+    "EDMM*H*CTR",
+    "EDMM*M*CTR",
+    "EDWW_CTR",
+    "EDWW*B*CTR",
+    "EDWW*F*CTR",
+    "EDWW*K*CTR",
+    "EDWW*M*CTR",
+    "EDUU*H*CTR",
+    "EDUU*O*CTR",
+    "EDUU*OH*CTR",
+    "EDUU*SPE*CTR",
+    "EDUU*SAL*CTR",
+    "EDAH*TWR",
+    "EDDB*N*APP",
+    "EDDB*S*APP",
+    "EDDB*DEP",
+    "EDDC*S*APP",
+    "EDDP*TRS*APP",
+    "EKRN*TWR",
+    "EKDK_CTR",
+    "EKDK*A*CTR",
+    "EKDK*C*CTR",
+    "ESAA*CTR",
+    "ESMM*2*CTR",
+    "ESMM*5*CTR",
+    "ESMM*6*CTR",
+    "ESMM*7*CTR",
+    "ESMM*8*CTR",
+    "ESMM*9*CTR",
+    "ESMM*K*CTR",
+    "EY*CTR",
+    "LK*CTR",
+    "LKMT*APP",
+    "LZBB*CTR",
+    "LZTT*TWR",
+    "UKLV*CTR",
+    "UKLV*APP",
+    "UKLU*TWR",
+    "UKR*CTR",
+    "UMKK*CTR",
+    "UMMV*CTR",
+    "UMBB*TWR",
+]
+exclude = [
+    "LKAA*S*CTR",
+    "LKAA*W*CTR",
+    "UMMV*S*CTR",
+]
+priority = [
+    "EPWW*",
+    "EP*_APP",
+    "EP*_TWR",
+    "ED*",
+    "*_FMP",
+    "*_CTR",
+    "*_APP",
+    "*_TWR",
+    "*_GND",
+]
+frequencies = "ShowAll"
+grouping = "FirAndIcao"
+
+[stations.profiles.EPWW_RADAR.aliases]
+"131.005" = "EPBY TWR"
+"128.250" = "APP DE"
+"122.750" = "EPDE TWR"
+"127.280" = "APP GD"
+"127.150" = "FIS GD"
+"133.660" = "APP GD L"
+"118.105" = "EPGD TWR"
+"121.075" = "APP KK"
+"126.975" = "APP KK E"
+"119.275" = "FIS KK"
+"126.530" = "DIR KK"
+"135.405" = "DIR KT"
+"133.030" = "APP KK RZ"
+"123.255" = "EPKK TWR"
+"120.750" = "APP KS P"
+"121.025" = "EPKS TWR"
+"129.255" = "EPKT TWR"
+"136.430" = "EPLB TWR"
+"124.230" = "EPLL TWR"
+"123.930" = "EPMO TWR"
+"126.300" = "FIS PO"
+"128.925" = "APP PO N"
+"123.040" = "APP PO S"
+"119.980" = "EPPO TWR"
+"118.430" = "EPRA TWR"
+"126.805" = "EPRZ TWR"
+"121.255" = "EPSC TWR"
+"118.775" = "FIS WA N"
+"118.030" = "EPSY TWR"
+"128.805" = "APP WA"
+"129.380" = "APP WA F"
+"119.450" = "FIS WA S"
+"125.055" = "APP WA N"
+"135.930" = "APP WA S"
+"118.305" = "EPWA TWR"
+"120.255" = "EPWR TWR"
+"125.450" = "ACC (BB)"
+"127.025" = "ACC B"
+"133.475" = "ACC C"
+"134.225" = "ACC D"
+"120.950" = "ACC E"
+"129.075" = "ACC F"
+"124.925" = "ACC G"
+"134.875" = "FIS EPWW"
+"124.625" = "ACC J"
+"132.700" = "ACC N"
+"123.625" = "ACC R"
+"130.625" = "ACC HI"
+"118.755" = "EPZG TWR"
+"132.830" = "EDAH TWR"
+"119.630" = "EDDB APP N"
+"126.425" = "EDDB APP S"
+"120.630" = "EDDB DEP S"
+"125.875" = "EDDC APP SAS"
+"126.175" = "EDDP APP TRS"
+"133.230" = "EDMM GER"
+"118.235" = "EDMM HAL"
+"133.565" = "EDMM HOF"
+"124.960" = "EDMM MEI"
+"128.235" = "EDUU H"
+"126.785" = "EDUU OH"
+"133.035" = "EDUU O"
+"133.860" = "EDUU SAL"
+"133.285" = "EDUU SPE"
+"123.225" = "EDWW B"
+"133.725" = "EDWW ACC"
+"136.450" = "EDWW F"
+"136.050" = "EDWW K"
+"124.175" = "EDWW M"
+"135.290" = "EKDK A"
+"136.555" = "EKDK ACC"
+"128.215" = "EKDK C"
+"118.330" = "EKRN TWR"
+"126.825" = "ESAA ACC"
+"132.765" = "ESMM 5"
+"135.805" = "ESMM 6"
+"124.155" = "ESMM 7"
+"128.180" = "ESMM 8"
+"135.985" = "ESMM 9"
+"131.280" = "ESMM K"
+"124.605" = "EYKA FIS"
+"133.305" = "EYVL ACC"
+"135.380" = "EYVL E"
+"133.430" = "EYVL M"
+"132.280" = "EYVL U"
+"127.125" = "LKAA ACC"
+"126.100" = "LKAA FIS"
+"127.825" = "LKAA N"
+"124.050" = "LKAA R"
+"124.775" = "LKAA U"
+"119.375" = "LKMT APP"
+"134.475" = "LZBB ACC"
+"124.300" = "LZBB FIS"
+"127.425" = "LZBB U"
+"121.350" = "LZTT TWR"
+"120.525" = "UKLL APP"
+"126.900" = "UKLU TWR"
+"134.050" = "UKLV ACC"
+"123.475" = "UKR CTR"
+"127.700" = "UMBB TWR"
+"123.700" = "UMKK ACC"
+"135.700" = "UMMV ACC"
+"119.125" = "UMMV N"
+"124.825" = "UMMV W"
+
+[stations.profiles.EPWW_TWR]
+include = [
+    "EP*",
+]
+exclude = []
+priority = [
+    "EPWW*",
+    "EP*_APP",
+    "EP*_TWR",
+    "EP*_GND",
+    "EP*_DEL", 
+    "*_FMP",
+    "*_CTR",
+    "*_APP",
+    "*_TWR",
+    "*_GND",
+]
+frequencies = "ShowAll"
+grouping = "ICAO"
+
+[stations.profiles.EPWW_TWR.aliases]
+"118.330" = "BIELSKO RADIO"
+"119.180" = "BABICE INFO"
+"123.205" = "BIALYSTOK RADIO"
+"131.005" = "TWR BY"
+"128.250" = "APP DE"
+"122.750" = "TWR DE"
+"127.280" = "APP GD"
+"131.330" = "GND GD" // Gdansk Ground
+"127.150" = "FIS GD"
+"133.660" = "APP GD L"
+"118.105" = "TWR GD"
+"118.260" = "GLIWICE RADIO"
+"126.855" = "GRADY RADIO"
+"122.830" = "JASTARNIA RADIO"
+"118.080" = "MASLOW RADIO"
+"119.405" = "KIKITY RADIO"
+"121.075" = "APP KK"
+"121.980" = "DEL KK" // Krakow Delivery
+"126.975" = "APP KK E"
+"118.105" = "GND KK" // Krakow Ground
+"119.275" = "FIS KK"
+"126.530" = "DIR KK"
+"135.405" = "DIR KT"
+"133.030" = "APP KK RZ"
+"123.255" = "TWR KK"
+"120.080" = "KATOWICE RADIO"
+"118.605" = "POBIEDNIK RADIO"
+"119.555" = "KROSNO RADIO"
+"120.750" = "APP KS P"
+"121.025" = "TWR KS"
+"124.080" = "DEL KT" // Katowice Delivery
+"121.805" = "GND KT" // Katowice Ground
+"129.255" = "TWR KT"
+"136.430" = "TWR LB"
+"120.005" = "DEL LL" // Lodz Delivery
+"124.230" = "TWR LL"
+"121.390" = "RADAWIEC RADIO"
+"119.105" = "MIELEC INFO"
+"119.680" = "DEL MO" // Modlin Delivery
+"123.930" = "TWR MO"
+"122.305" = "NOWY TARG RADIO"
+"124.480" = "DAJTKI RADIO"
+"121.805" = "DEL PO" // Poznan Delivery
+"124.140" = "GND PO" // Poznan Ground
+"126.300" = "FIS PO"
+"128.925" = "APP PO N"
+"123.040" = "APP PO S"
+"119.980" = "TWR PO"
+"122.600" = "PRZASNYSZ RADIO"
+"121.750" = "GND M RA" // Radom MIL Ground
+"118.430" = "TWR RA"
+"121.805" = "GND RZ" // Rzeszow Ground
+"126.805" = "TWR RZ"
+"121.255" = "TWR SC"
+"118.775" = "FIS WA N"
+"118.030" = "TWR SY"
+"128.805" = "APP WA"
+"121.605" = "DEL WA" // Okecie Delivery
+"129.380" = "APP WA F"
+"121.905" = "GND WA" // Okecie Ground
+"119.450" = "FIS WA S"
+"125.055" = "APP WA N"
+"135.930" = "APP WA S"
+"118.305" = "TWR WA"
+"121.805" = "DEL WR" // Wroclaw Delivery
+"120.255" = "TWR WR"
+"127.025" = "ACC B"
+"125.450" = "ACC (BB)"
+"133.475" = "ACC C"
+"134.225" = "ACC D"
+"120.950" = "ACC E"
+"129.075" = "ACC F"
+"124.925" = "ACC G"
+"134.875" = "FIS EPWW"
+"124.625" = "ACC J"
+"132.700" = "ACC N"
+"123.625" = "ACC R"
+"130.625" = "ACC HI"
+"118.755" = "TWR ZG"
+"130.780" = "PRZYLEP RADIO"
+"122.805" = "ZAR RADIO"
+
+[stations]
+selected_profile = "EPWA"
+
+[stations.profiles.EPWA]
+include = [
+    "EPWA*",
+    "EPWW*",
+    "EPBC*I*TWR",
+    "EPSY*I*APP",
+]
+exclude = []
+priority = [
+    "EPWA*",
+    "EP*_APP",
+    "EP*_CTR",
+    "*_FMP",
+    "*_CTR",
+    "*_APP",
+    "*_TWR",
+    "*_GND",
+]
+frequencies = "ShowAll"
+grouping = "None"
+
+[stations.profiles.EPWA.aliases]
+"119.180" = "BABICE INFO"
+"118.775" = "FIS WA N"
+"128.805" = "APP WA"
+"121.605" = "DEL WA"
+"129.380" = "APP WA F"
+"121.905" = "GND WA"
+"119.450" = "FIS WA S"
+"125.055" = "APP WA N"
+"135.930" = "APP WA S"
+"118.305" = "TWR WA"
+"127.025" = "ACC B"
+"125.450" = "ACC (BB)"
+"133.475" = "ACC C"
+"134.225" = "ACC D"
+"120.950" = "ACC E"
+"129.075" = "ACC F"
+"124.925" = "ACC G"
+"134.875" = "FIS EPWW"
+"124.625" = "ACC J"
+"132.700" = "ACC N"
+"123.625" = "ACC R"
+"130.625" = "ACC HI"
+
+[stations.profiles.Default]
+include = []
+exclude = []
+priority = [
+    "*_FMP",
+    "*_CTR",
+    "*_APP",
+    "*_TWR",
+    "*_GND",
+    "*_DEL",
+]
+frequencies = "ShowAll"
+grouping = "None"
+
+[stations.profiles.Default.aliases]
