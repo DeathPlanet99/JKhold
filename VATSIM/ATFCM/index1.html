@@ -1,0 +1,1894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VATSIM ATFCM - Network Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Network Manager Color Scheme */
+        :root {
+            --nm-primary: #003366;
+            --nm-secondary: #004080;
+            --nm-accent: #0066cc;
+            --nm-sidebar: #1a2a3a;
+            --nm-sidebar-hover: #2a3a4a;
+            --nm-header: #002244;
+            --nm-text: #e0e0e0;
+            --nm-text-muted: #8899aa;
+            --nm-border: #334455;
+            --nm-success: #28a745;
+            --nm-warning: #ffc107;
+            --nm-danger: #dc3545;
+            --nm-info: #17a2b8;
+            appearance: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d1a26;
+            color: var(--nm-text);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: linear-gradient(180deg, var(--nm-sidebar) 0%, #0d1520 100%);
+            border-right: 1px solid var(--nm-border);
+        }
+
+        .sidebar-item {
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background-color: var(--nm-sidebar-hover);
+            border-left-color: var(--nm-accent);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--nm-secondary);
+            border-left-color: var(--nm-accent);
+        }
+
+        /* Header Styles */
+        .main-header {
+            background: linear-gradient(90deg, var(--nm-header) 0%, var(--nm-primary) 100%);
+            border-bottom: 2px solid var(--nm-accent);
+        }
+
+        /* Card Styles */
+        .nm-card {
+            background: linear-gradient(135deg, var(--nm-sidebar) 0%, #1a2530 100%);
+            border: 1px solid var(--nm-border);
+            border-radius: 8px;
+        }
+
+        .nm-card-header {
+            background-color: var(--nm-secondary);
+            border-bottom: 1px solid var(--nm-border);
+            border-radius: 8px 8px 0 0;
+        }
+
+        /* Status Indicators */
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-green { background-color: var(--nm-success); }
+        .status-yellow { background-color: var(--nm-warning); }
+        .status-red { background-color: var(--nm-danger); }
+
+        /* Table Styles */
+        .nm-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .nm-table th {
+            background-color: var(--nm-secondary);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--nm-accent);
+        }
+
+        .nm-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--nm-border);
+        }
+
+        .nm-table tr:hover {
+            background-color: var(--nm-sidebar-hover);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--nm-sidebar);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--nm-border);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--nm-accent);
+        }
+
+        /* Submenu Animation */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu.open {
+            max-height: 800px;
+        }
+
+        /* Nested Submenu */
+        .submenu-nested {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu-nested.open {
+            max-height: 500px;
+        }
+
+        /* Button Styles */
+        .nm-btn {
+            background: linear-gradient(135deg, var(--nm-accent) 0%, var(--nm-secondary) 100%);
+            border: 1px solid var(--nm-accent);
+            transition: all 0.2s ease;
+        }
+
+        .nm-btn:hover {
+            background: linear-gradient(135deg, #0077dd 0%, var(--nm-accent) 100%);
+            box-shadow: 0 0 10px rgba(0, 102, 204, 0.5);
+        }
+
+        /* Map Placeholder */
+        .map-placeholder {
+            background: linear-gradient(135deg, #1a2a3a 0%, #0d1520 100%);
+            border: 2px dashed var(--nm-border);
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        /* Tab Styles */
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: none;
+            color: var(--nm-text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--nm-text);
+        }
+
+        .tab-btn.active {
+            color: var(--nm-accent);
+            border-bottom-color: var(--nm-accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Traffic Graph Placeholder */
+        .graph-placeholder {
+            background: linear-gradient(135deg, #1a2a3a 0%, #0d1520 100%);
+            border: 1px solid var(--nm-border);
+            min-height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Time Slider */
+        .time-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: var(--nm-border);
+            outline: none;
+        }
+
+        .time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--nm-accent);
+            cursor: pointer;
+        }
+
+        /* Badge */
+        .badge {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .badge-info { background: var(--nm-info); color: white; }
+        .badge-warning { background: var(--nm-warning); color: black; }
+        .badge-danger { background: var(--nm-danger); color: white; }
+        .badge-success { background: var(--nm-success); color: white; }
+    </style>
+</head>
+<body class="min-h-screen flex">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar w-64 min-h-screen flex flex-col fixed left-0 top-0 z-50 overflow-y-auto">
+        <!-- Logo Section -->
+        <div class="p-4 border-b border-[var(--nm-border)]">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[var(--nm-accent)] rounded-lg flex items-center justify-center">
+                    <i class="fas fa-plane text-white text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-white">VATSIM ATFCM</h1>
+                    <p class="text-xs text-[var(--nm-text-muted)]">Network Manager</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Menu -->
+        <nav class="flex-1 py-4 overflow-y-auto">
+            
+            <!-- 1. Dashboard -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer active" data-page="dashboard">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-tachometer-alt w-5 text-center text-[var(--nm-accent)]"></i>
+                    <span>Dashboard</span>
+                </div>
+            </div>
+
+            <!-- 2. ATC Monitor -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="atc-monitor">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-headset w-5 text-center text-[var(--nm-accent)]"></i>
+                    <span>ATC Monitor</span>
+                </div>
+            </div>
+
+            <!-- 3. Traffic (with submenu) -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="traffic" data-has-submenu="true">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-chart-line w-5 text-center text-[var(--nm-accent)]"></i>
+                        <span>Traffic</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs submenu-arrow transition-transform"></i>
+                </div>
+            </div>
+            <div class="submenu bg-[#0d1520]">
+                <!-- FMP Dashboard -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="traffic-fmp-dashboard" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>FMP Dashboard</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-general">
+                        <span>General Information</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-sectors">
+                        <span>Sectors Graphs</span>
+                    </div>
+                </div>
+
+                <!-- Airspace Monitor -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="traffic-airspace-monitor" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>Airspace Monitor</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-airspace-load">
+                        <span>Traffic Load Graph</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-airspace-tl-td-rt">
+                        <span>TL/TD/RT Monitor</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-airspace-weight">
+                        <span>Traffic Weight</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-airspace-sector-data">
+                        <span>Sector Data Management</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-airspace-replay">
+                        <span>Replay Function</span>
+                    </div>
+                </div>
+
+                <!-- ATC Configuration -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="traffic-atc-config" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>ATC Configuration</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-atc-flow">
+                        <span>Traffic Flow</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-atc-optimiser">
+                        <span>Configuration Optimiser</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-atc-capacity">
+                        <span>Capacity Manager</span>
+                    </div>
+                </div>
+
+                <!-- FMP Manager -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="traffic-fmp-manager" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>FMP Manager</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-ecfmp">
+                        <span>ECFMP Restriction Input</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-atfm">
+                        <span>ATFM Regulations</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-scenarios">
+                        <span>Scenarios & Planning</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-tsa">
+                        <span>TSA/VLARA/AUP/UUP</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-neighbours">
+                        <span>Neighbour Sectors</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="traffic-fmp-bookings">
+                        <span>Bookings Section</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. Airport (with submenu) -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="airport" data-has-submenu="true">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-plane-departure w-5 text-center text-[var(--nm-accent)]"></i>
+                        <span>Airport</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs submenu-arrow transition-transform"></i>
+                </div>
+            </div>
+            <div class="submenu bg-[#0d1520]">
+                <!-- Airport Monitor -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="airport-monitor" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>Airport Monitor</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="airport-departure-list">
+                        <span>Departure List</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="airport-tsat-ctot">
+                        <span>TSAT & CTOT Display</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="airport-arrival-flow">
+                        <span>Predicted Arrival Flow</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="airport-weather-notam">
+                        <span>Weather & NOTAMs</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="airport-data-management">
+                    <span>Airport Data Management</span>
+                </div>
+            </div>
+
+            <!-- 5. Flights (with submenu) -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="flights" data-has-submenu="true">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-route w-5 text-center text-[var(--nm-accent)]"></i>
+                        <span>Flights</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs submenu-arrow transition-transform"></i>
+                </div>
+            </div>
+            <div class="submenu bg-[#0d1520]">
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="flights-list">
+                    <span>Flight List</span>
+                </div>
+                <!-- Flight Data -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="flights-data" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>Flight Data</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="flights-data-info">
+                        <span>Flight Information</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="flights-data-restriction">
+                        <span>Restrictions</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="flights-data-profile">
+                        <span>Profile View</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. Airspace Data Management (with submenu) -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="airspace-data" data-has-submenu="true">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-database w-5 text-center text-[var(--nm-accent)]"></i>
+                        <span>Airspace Data</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs submenu-arrow transition-transform"></i>
+                </div>
+            </div>
+            <div class="submenu bg-[#0d1520]">
+                <!-- Sector Capacity Editor -->
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="airspace-sector-capacity" data-has-nested="true">
+                    <div class="flex items-center justify-between">
+                        <span>Sector Capacity Editor</span>
+                        <i class="fas fa-chevron-right text-xs nested-arrow transition-transform"></i>
+                    </div>
+                </div>
+                <div class="submenu-nested bg-[#0a1015]">
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="airspace-traffic-volumes">
+                        <span>Traffic Volumes</span>
+                    </div>
+                    <div class="sidebar-item px-4 py-2 pl-14 cursor-pointer text-xs" data-page="airspace-sector-configs">
+                        <span>Sector Configurations</span>
+                    </div>
+                </div>
+                
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm" data-page="airspace-profile-restrictions">
+                    <span>Profile Restrictions Editor</span>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="border-t border-[var(--nm-border)] my-4 mx-4"></div>
+
+            <!-- 7. Settings (with submenu) -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="settings" data-has-submenu="true">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-sliders-h w-5 text-center text-[var(--nm-text-muted)]"></i>
+                        <span class="text-[var(--nm-text-muted)]">Settings</span>
+                    </div>
+                    <i class="fas fa-chevron-down text-xs submenu-arrow transition-transform text-[var(--nm-text-muted)]"></i>
+                </div>
+            </div>
+            <div class="submenu bg-[#0d1520]">
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm text-[var(--nm-text-muted)]" data-page="settings-visual">
+                    <span>Visual Settings</span>
+                </div>
+                <div class="sidebar-item px-4 py-2 pl-10 cursor-pointer text-sm text-[var(--nm-text-muted)]" data-page="settings-other">
+                    <span>Other Settings</span>
+                </div>
+            </div>
+
+            <!-- 8. Help -->
+            <div class="sidebar-item px-4 py-3 cursor-pointer" data-page="help">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-question-circle w-5 text-center text-[var(--nm-text-muted)]"></i>
+                    <span class="text-[var(--nm-text-muted)]">Help</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Footer -->
+        <div class="p-4 border-t border-[var(--nm-border)] text-xs text-[var(--nm-text-muted)]">
+            <p>Version 2.0.0</p>
+            <p>© 2024 VATSIM ATFCM</p>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 ml-64">
+        <!-- Header -->
+        <header class="main-header h-16 flex items-center justify-between px-6 sticky top-0 z-40">
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-semibold" id="page-title">Dashboard</h2>
+                <span class="text-[var(--nm-text-muted)] text-sm">|</span>
+                <span class="text-sm text-[var(--nm-text-muted)]" id="current-time"></span>
+            </div>
+            <div class="flex items-center gap-4">
+                <!-- Connection Status -->
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="status-indicator status-green"></span>
+                    <span>API Connected</span>
+                </div>
+                <!-- Global refresh countdown -->
+                <div class="flex items-center gap-2 text-xs text-[var(--nm-text-muted)]">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>Refresh in</span>
+                    <span id="refresh-countdown">30s</span>
+                </div>
+                <!-- VATSIM SSO Login -->
+                <button class="nm-btn px-4 py-2 rounded-lg text-sm flex items-center gap-2" id="login-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Login via VATSIM</span>
+                </button>
+                <!-- User Info (hidden by default) -->
+                <div class="flex items-center gap-3 pl-4 border-l border-[var(--nm-border)] hidden" id="user-info">
+                    <div class="text-right">
+                        <p class="text-sm font-medium" id="user-name">Network Manager</p>
+                        <p class="text-xs text-[var(--nm-text-muted)]" id="user-role">Administrator</p>
+                    </div>
+                    <div class="w-10 h-10 bg-[var(--nm-secondary)] rounded-full flex items-center justify-center">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="p-6" id="main-content">
+            
+            <!-- ==================== -->
+            <!-- 1. DASHBOARD PAGE -->
+            <!-- ==================== -->
+            <div id="page-dashboard" class="page-content">
+                <!-- Stats Cards Row 1 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <!-- Online Traffic -->
+                    <div class="nm-card p-4" id="online-traffic-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-[var(--nm-text-muted)] text-sm">Online Traffic</p>
+                                <p class="text-2xl font-bold mt-1" id="online-traffic-count">--</p>
+                            </div>
+                            <div class="w-12 h-12 bg-[var(--nm-accent)]/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-plane text-[var(--nm-accent)] text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs mt-2 text-[var(--nm-text-muted)]" id="online-traffic-change">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </p>
+                    </div>
+
+                    <!-- Delayed Traffic -->
+                    <div class="nm-card p-4" id="delayed-traffic-card">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-[var(--nm-text-muted)] text-sm">Delayed Traffic</p>
+                                <p class="text-2xl font-bold mt-1" id="delayed-traffic-count">--</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-red-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs mt-2 text-red-400" id="delayed-traffic-change">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </p>
+                    </div>
+
+                    <!-- Most Affected Sector -->
+                    <div class="nm-card p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-[var(--nm-text-muted)] text-sm">Most Affected Sector</p>
+                                <p class="text-2xl font-bold mt-1" id="most-affected-sector">--</p>
+                            </div>
+                            <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-layer-group text-orange-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs mt-2 text-orange-400" id="most-affected-sector-info">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </p>
+                    </div>
+
+                    <!-- Most Affected Airport -->
+                    <div class="nm-card p-4">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-[var(--nm-text-muted)] text-sm">Most Affected Airport</p>
+                                <p class="text-2xl font-bold mt-1" id="most-affected-airport">--</p>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-plane-arrival text-purple-500 text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-xs mt-2 text-purple-400" id="most-affected-airport-info">
+                            <i class="fas fa-spinner fa-spin"></i> Loading...
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <!-- NM Map -->
+                    <div class="lg:col-span-2 nm-card">
+                        <div class="nm-card-header px-4 py-3 flex items-center justify-between">
+                            <h3 class="font-semibold flex items-center gap-2">
+                                <i class="fas fa-map"></i>
+                                Network Manager Map
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <button class="text-xs px-2 py-1 bg-[var(--nm-sidebar)] rounded hover:bg-[var(--nm-accent)]">
+                                    <i class="fas fa-expand"></i>
+                                </button>
+                                <button class="text-xs px-2 py-1 bg-[var(--nm-sidebar)] rounded hover:bg-[var(--nm-accent)]">
+                                    <i class="fas fa-filter"></i> Filters
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="map-placeholder rounded-lg">
+                                <i class="fas fa-globe-europe text-6xl text-[var(--nm-border)]"></i>
+                                <p class="text-[var(--nm-text-muted)]">Interactive NM Map</p>
+                                <p class="text-xs text-[var(--nm-text-muted)]">Showing traffic flow, restrictions, and sector status</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Delay Reasons & System Status -->
+                    <div class="space-y-6">
+                        <!-- Delay Reasons -->
+                        <div class="nm-card">
+                            <div class="nm-card-header px-4 py-3">
+                                <h3 class="font-semibold flex items-center gap-2">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    Delay Reasons
+                                </h3>
+                            </div>
+                            <div class="p-4 space-y-3" id="delay-reasons-list">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                                        <span class="text-sm">Weather (WX)</span>
+                                    </div>
+                                    <span class="text-sm font-mono">42%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-orange-500"></span>
+                                        <span class="text-sm">ATC Capacity (C)</span>
+                                    </div>
+                                    <span class="text-sm font-mono">28%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                                        <span class="text-sm">Staffing (S)</span>
+                                    </div>
+                                    <span class="text-sm font-mono">18%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                                        <span class="text-sm">Equipment (E)</span>
+                                    </div>
+                                    <span class="text-sm font-mono">8%</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-3 h-3 rounded-full bg-gray-500"></span>
+                                        <span class="text-sm">Other (O)</span>
+                                    </div>
+                                    <span class="text-sm font-mono">4%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- System Status -->
+                        <div class="nm-card">
+                            <div class="nm-card-header px-4 py-3">
+                                <h3 class="font-semibold flex items-center gap-2">
+                                    <i class="fas fa-server"></i>
+                                    System Status
+                                </h3>
+                            </div>
+                            <div class="p-4 space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">CDM API</span>
+                                    <span class="flex items-center gap-2 text-sm text-green-400">
+                                        <span class="status-indicator status-green"></span>
+                                        Operational
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">VATSIM Data Feed</span>
+                                    <span class="flex items-center gap-2 text-sm text-green-400">
+                                        <span class="status-indicator status-green"></span>
+                                        Operational
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">ECFMP API</span>
+                                    <span class="flex items-center gap-2 text-sm text-green-400">
+                                        <span class="status-indicator status-green"></span>
+                                        Operational
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">Slot Calculator</span>
+                                    <span class="flex items-center gap-2 text-sm text-green-400">
+                                        <span class="status-indicator status-green"></span>
+                                        Operational
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ECFMP Restrictions Table -->
+                <div class="nm-card mb-6">
+                    <div class="nm-card-header px-4 py-3 flex items-center justify-between">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-list"></i>
+                            ECFMP Restrictions
+                        </h3>
+                        <a href="https://ecfmp.vatsim.net" target="_blank" class="text-xs text-[var(--nm-accent)] hover:underline">
+                            View on ECFMP <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+                    <div class="p-4 overflow-x-auto overflow-y-auto" style="max-height: 24rem;">
+                        <table class="nm-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Airspace</th>
+                                    <th>Reason</th>
+                                    <th>Type</th>
+                                    <th>Start - End</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ecfmp-restrictions-tbody">
+                                <tr>
+                                    <td colspan="6" class="text-sm text-[var(--nm-text-muted)]">
+                                        <i class="fas fa-spinner fa-spin"></i> Loading restrictions...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 2. ATC MONITOR PAGE -->
+            <!-- ==================== -->
+            <div id="page-atc-monitor" class="page-content hidden">
+                <div class="nm-card mb-6">
+                    <div class="nm-card-header px-4 py-3 flex items-center justify-between">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-headset"></i>
+                            Airport Departure List
+                        </h3>
+                        <div class="flex items-center gap-4">
+                            <select class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-1 text-sm">
+                                <option value="">Select Airport...</option>
+                                <option value="EPWA">EPWA - Warsaw</option>
+                                <option value="EPKK">EPKK - Kraków</option>
+                                <option value="EPGD">EPGD - Gdańsk</option>
+                                <option value="EPWR">EPWR - Wrocław</option>
+                                <option value="EPPO">EPPO - Poznań</option>
+                            </select>
+                            <span class="badge badge-info">VATSIM SSO Required</span>
+                        </div>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table class="nm-table">
+                            <thead>
+                                <tr>
+                                    <th>Callsign</th>
+                                    <th>Aircraft</th>
+                                    <th>Destination</th>
+                                    <th>SID</th>
+                                    <th>RWY</th>
+                                    <th>EOBT</th>
+                                    <th>TSAT</th>
+                                    <th>CTOT</th>
+                                    <th>Measures</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="atc-departure-list">
+                                <tr>
+                                    <td colspan="10" class="text-center text-[var(--nm-text-muted)] py-8">
+                                        <i class="fas fa-lock text-4xl mb-4"></i>
+                                        <p class="text-lg">Login Required</p>
+                                        <p class="text-sm">Please sign in via VATSIM SSO to access departure list</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Measures/Restrictions Info -->
+                <div class="nm-card">
+                    <div class="nm-card-header px-4 py-3">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-info-circle"></i>
+                            Active Measures Affecting This Airport
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg border border-[var(--nm-border)]">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="badge badge-danger">MDI</span>
+                                    <span class="font-semibold">EPWW_S_CTR</span>
+                                </div>
+                                <p class="text-xs text-[var(--nm-text-muted)]">Minimum Departure Interval: 5 min</p>
+                                <p class="text-xs text-[var(--nm-text-muted)]">Valid: 14:00 - 18:00 UTC</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg border border-[var(--nm-border)]">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="badge badge-warning">MIT</span>
+                                    <span class="font-semibold">SORIX</span>
+                                </div>
+                                <p class="text-xs text-[var(--nm-text-muted)]">Miles in Trail: 10 NM</p>
+                                <p class="text-xs text-[var(--nm-text-muted)]">Valid: 14:00 - 20:00 UTC</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 3. TRAFFIC PAGES -->
+            <!-- ==================== -->
+            <div id="page-traffic" class="page-content hidden">
+                <div class="nm-card p-8 text-center">
+                    <i class="fas fa-chart-line text-6xl text-[var(--nm-accent)] mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Traffic Module</h3>
+                    <p class="text-[var(--nm-text-muted)] mb-4">Select a submenu option from the sidebar to access traffic monitoring tools.</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mt-6">
+                        <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                            <i class="fas fa-chart-bar text-2xl text-[var(--nm-accent)] mb-2"></i>
+                            <p class="text-sm">FMP Dashboard</p>
+                        </div>
+                        <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                            <i class="fas fa-radar text-2xl text-[var(--nm-accent)] mb-2"></i>
+                            <p class="text-sm">Airspace Monitor</p>
+                        </div>
+                        <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                            <i class="fas fa-cogs text-2xl text-[var(--nm-accent)] mb-2"></i>
+                            <p class="text-sm">ATC Configuration</p>
+                        </div>
+                        <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                            <i class="fas fa-tasks text-2xl text-[var(--nm-accent)] mb-2"></i>
+                            <p class="text-sm">FMP Manager</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traffic - Airspace Monitor -->
+            <div id="page-traffic-airspace-monitor" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Traffic Load Graph -->
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3 flex items-center justify-between">
+                            <h3 class="font-semibold flex items-center gap-2">
+                                <i class="fas fa-chart-area"></i>
+                                Traffic Load (Live & Predicted)
+                            </h3>
+                            <div class="flex items-center gap-2">
+                                <button class="text-xs px-2 py-1 bg-[var(--nm-accent)] rounded">1 min</button>
+                                <button class="text-xs px-2 py-1 bg-[var(--nm-sidebar)] rounded hover:bg-[var(--nm-accent)]">5 min</button>
+                                <button class="text-xs px-2 py-1 bg-[var(--nm-sidebar)] rounded hover:bg-[var(--nm-accent)]">20 min</button>
+                            </div>
+                        </div>
+                        <div class="p-4">
+                            <div class="graph-placeholder rounded-lg mb-4">
+                                <div class="text-center">
+                                    <i class="fas fa-chart-area text-4xl text-[var(--nm-border)] mb-2"></i>
+                                    <p class="text-[var(--nm-text-muted)] text-sm">Traffic Load Graph</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <span class="text-xs text-[var(--nm-text-muted)]">Time Scroll:</span>
+                                <input type="range" class="time-slider flex-1" min="-60" max="60" value="0">
+                                <span class="text-xs font-mono">NOW</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TL/TD/RT Monitor -->
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold flex items-center gap-2">
+                                <i class="fas fa-chart-bar"></i>
+                                TL / TD / RT Monitor
+                            </h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Traffic Load (TL)</span>
+                                        <span class="font-mono">24 / 30</span>
+                                    </div>
+                                    <div class="h-4 bg-[var(--nm-border)] rounded-full overflow-hidden">
+                                        <div class="h-full bg-green-500 rounded-full" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Traffic Demand (TD)</span>
+                                        <span class="font-mono text-yellow-400">32 / 30</span>
+                                    </div>
+                                    <div class="h-4 bg-[var(--nm-border)] rounded-full overflow-hidden">
+                                        <div class="h-full bg-yellow-500 rounded-full" style="width: 106%;"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-sm mb-1">
+                                        <span>Regulated Traffic (RT)</span>
+                                        <span class="font-mono text-red-400">8</span>
+                                    </div>
+                                    <div class="h-4 bg-[var(--nm-border)] rounded-full overflow-hidden">
+                                        <div class="h-full bg-red-500 rounded-full" style="width: 26%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Traffic Weight Monitor -->
+                <div class="nm-card mb-6">
+                    <div class="nm-card-header px-4 py-3">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-balance-scale"></i>
+                            Traffic Weight Monitor (Transit vs DEP/ARR)
+                        </h3>
+                    </div>
+                    <div class="p-4">
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <p class="text-3xl font-bold text-blue-400">45%</p>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Transit Traffic</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <p class="text-3xl font-bold text-green-400">32%</p>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Departures</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <p class="text-3xl font-bold text-purple-400">23%</p>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Arrivals</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Replay Function -->
+                <div class="nm-card">
+                    <div class="nm-card-header px-4 py-3 flex items-center justify-between">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-history"></i>
+                            Replay Function (Post-Ops Investigation)
+                        </h3>
+                        <span class="badge badge-info">Statsim API Integration</span>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center gap-4 mb-4">
+                            <input type="date" class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-2">
+                            <input type="time" class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-2">
+                            <span class="text-[var(--nm-text-muted)]">to</span>
+                            <input type="time" class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-2">
+                            <button class="nm-btn px-4 py-2 rounded-lg">
+                                <i class="fas fa-play mr-2"></i> Load Replay
+                            </button>
+                        </div>
+                        <div class="graph-placeholder rounded-lg">
+                            <div class="text-center">
+                                <i class="fas fa-film text-4xl text-[var(--nm-border)] mb-2"></i>
+                                <p class="text-[var(--nm-text-muted)] text-sm">Select date and time range to load historical data</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Traffic - ATC Configuration -->
+            <div id="page-traffic-atc-config" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <!-- Traffic Flow -->
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold flex items-center gap-2">
+                                <i class="fas fa-stream"></i>
+                                Traffic Flow for Selected Configuration
+                            </h3>
+                        </div>
+                        <div class="p-4">
+                            <select class="w-full bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-2 mb-4">
+                                <option>EPWW_CTR (Collapsed)</option>
+                                <option>EPWW_N_CTR + EPWW_S_CTR (Split N/S)</option>
+                                <option>EPWW_E_CTR + EPWW_W_CTR (Split E/W)</option>
+                                <option>Full Sectorization (4 sectors)</option>
+                            </select>
+                            <div class="graph-placeholder rounded-lg">
+                                <i class="fas fa-project-diagram text-4xl text-[var(--nm-border)]"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Optimiser -->
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold flex items-center gap-2">
+                                <i class="fas fa-magic"></i>
+                                Configuration Optimiser
+                            </h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg mb-4 border-l-4 border-[var(--nm-accent)]">
+                                <p class="text-sm font-semibold mb-2">Recommended Configuration:</p>
+                                <p class="text-lg text-[var(--nm-accent)]">EPWW_N_CTR + EPWW_S_CTR</p>
+                                <p class="text-xs text-[var(--nm-text-muted)] mt-2">Based on current traffic load and ATC bookings</p>
+                            </div>
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>ATC Bookings Correlation</span>
+                                    <span class="text-green-400"><i class="fas fa-check-circle"></i> 2 Controllers booked</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>Expected Traffic</span>
+                                    <span class="font-mono">45-60 movements/hr</span>
+                                </div>
+                                <div class="flex items-center justify-between text-sm">
+                                    <span>Capacity Utilization</span>
+                                    <span class="text-yellow-400">85%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacity Manager -->
+                <div class="nm-card">
+                    <div class="nm-card-header px-4 py-3">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-sliders-h"></i>
+                            Capacity Manager
+                        </h3>
+                    </div>
+                    <div class="p-4 overflow-x-auto">
+                        <table class="nm-table">
+                            <thead>
+                                <tr>
+                                    <th>Sector</th>
+                                    <th>Nominal Capacity</th>
+                                    <th>Current Capacity</th>
+                                    <th>Adjustment</th>
+                                    <th>Reason</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>EPWW_N_CTR</td>
+                                    <td class="font-mono">30</td>
+                                    <td class="font-mono text-yellow-400">25</td>
+                                    <td class="text-red-400">-17%</td>
+                                    <td>Weather</td>
+                                    <td>
+                                        <button class="text-xs px-2 py-1 bg-[var(--nm-accent)] rounded">Edit</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>EPWW_S_CTR</td>
+                                    <td class="font-mono">28</td>
+                                    <td class="font-mono text-green-400">28</td>
+                                    <td class="text-green-400">0%</td>
+                                    <td>-</td>
+                                    <td>
+                                        <button class="text-xs px-2 py-1 bg-[var(--nm-accent)] rounded">Edit</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 4. AIRPORT PAGES -->
+            <!-- ==================== -->
+            <div id="page-airport" class="page-content hidden">
+                <div class="nm-card p-8 text-center">
+                    <i class="fas fa-plane-departure text-6xl text-[var(--nm-accent)] mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Airport Module</h3>
+                    <p class="text-[var(--nm-text-muted)]">Select a submenu option from the sidebar to access airport tools.</p>
+                </div>
+            </div>
+
+            <!-- Airport Monitor -->
+            <div id="page-airport-monitor" class="page-content hidden">
+                <!-- Tabs -->
+                <div class="nm-card mb-6">
+                    <div class="border-b border-[var(--nm-border)] px-4">
+                        <div class="flex gap-4">
+                            <button class="tab-btn active" data-tab="departures">Departure List</button>
+                            <button class="tab-btn" data-tab="tsat-ctot">TSAT & CTOT</button>
+                            <button class="tab-btn" data-tab="arrivals">Arrival Flow</button>
+                            <button class="tab-btn" data-tab="weather">Weather & NOTAMs</button>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Departures -->
+                    <div class="tab-content active p-4" id="tab-departures">
+                        <div class="flex items-center gap-4 mb-4">
+                            <select class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-2">
+                                <option value="EPWA">EPWA - Warsaw Chopin</option>
+                                <option value="EPKK">EPKK - Kraków</option>
+                            </select>
+                            <button class="nm-btn px-4 py-2 rounded-lg">
+                                <i class="fas fa-sync-alt mr-2"></i> Refresh
+                            </button>
+                        </div>
+                        <table class="nm-table">
+                            <thead>
+                                <tr>
+                                    <th>Callsign</th>
+                                    <th>A/C Type</th>
+                                    <th>Dest</th>
+                                    <th>SID</th>
+                                    <th>RWY</th>
+                                    <th>EOBT</th>
+                                    <th>TOBT</th>
+                                    <th>TSAT</th>
+                                    <th>CTOT</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="font-mono">LOT123</td>
+                                    <td>B738</td>
+                                    <td>EGLL</td>
+                                    <td>OLILA3G</td>
+                                    <td>29</td>
+                                    <td class="font-mono">14:25</td>
+                                    <td class="font-mono">14:20</td>
+                                    <td class="font-mono text-green-400">14:22</td>
+                                    <td class="font-mono text-yellow-400">14:35</td>
+                                    <td><span class="badge badge-success">TSAT ISSUED</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="font-mono">RYR456</td>
+                                    <td>B738</td>
+                                    <td>LEMD</td>
+                                    <td>OLILA3G</td>
+                                    <td>29</td>
+                                    <td class="font-mono">14:30</td>
+                                    <td class="font-mono">14:25</td>
+                                    <td class="font-mono">--:--</td>
+                                    <td class="font-mono text-red-400">14:55</td>
+                                    <td><span class="badge badge-danger">CTOT DELAY</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tab Content: TSAT & CTOT -->
+                    <div class="tab-content p-4" id="tab-tsat-ctot">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <h4 class="font-semibold mb-4">TSAT Distribution</h4>
+                                <div class="graph-placeholder rounded-lg h-48">
+                                    <i class="fas fa-chart-bar text-4xl text-[var(--nm-border)]"></i>
+                                </div>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <h4 class="font-semibold mb-4">CTOT Compliance</h4>
+                                <div class="graph-placeholder rounded-lg h-48">
+                                    <i class="fas fa-chart-pie text-4xl text-[var(--nm-border)]"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Arrivals -->
+                    <div class="tab-content p-4" id="tab-arrivals">
+                        <h4 class="font-semibold mb-4">Predicted Arrival Flow by STAR</h4>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg text-center">
+                                <p class="text-2xl font-bold text-blue-400">12</p>
+                                <p class="text-sm text-[var(--nm-text-muted)]">BAMBI arrivals (next 30min)</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg text-center">
+                                <p class="text-2xl font-bold text-green-400">8</p>
+                                <p class="text-sm text-[var(--nm-text-muted)]">EPIKA arrivals (next 30min)</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg text-center">
+                                <p class="text-2xl font-bold text-purple-400">5</p>
+                                <p class="text-sm text-[var(--nm-text-muted)]">SORIX arrivals (next 30min)</p>
+                            </div>
+                        </div>
+                        <div class="graph-placeholder rounded-lg">
+                            <i class="fas fa-chart-line text-4xl text-[var(--nm-border)]"></i>
+                        </div>
+                    </div>
+
+                    <!-- Tab Content: Weather & NOTAMs -->
+                    <div class="tab-content p-4" id="tab-weather">
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <h4 class="font-semibold mb-4 flex items-center gap-2">
+                                    <i class="fas fa-cloud-sun"></i> METAR / TAF
+                                </h4>
+                                <pre class="text-xs font-mono bg-black/30 p-3 rounded overflow-x-auto">
+METAR EPWA 141400Z 29015KT 9999 FEW040 SCT100 18/08 Q1015 NOSIG
+TAF EPWA 141100Z 1412/1518 29012KT 9999 SCT040
+     BECMG 1418/1420 32008KT
+                                </pre>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg">
+                                <h4 class="font-semibold mb-4 flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle"></i> Active NOTAMs
+                                </h4>
+                                <div class="space-y-2 text-sm">
+                                    <div class="p-2 bg-yellow-500/10 border-l-4 border-yellow-500 rounded">
+                                        <p class="font-semibold">A0234/24 - RWY 11/29</p>
+                                        <p class="text-xs text-[var(--nm-text-muted)]">ILS RWY 11 U/S due maintenance</p>
+                                    </div>
+                                    <div class="p-2 bg-red-500/10 border-l-4 border-red-500 rounded">
+                                        <p class="font-semibold">A0235/24 - CRANE</p>
+                                        <p class="text-xs text-[var(--nm-text-muted)]">Crane operating vicinity RWY 33</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 5. FLIGHTS PAGES -->
+            <!-- ==================== -->
+            <div id="page-flights" class="page-content hidden">
+                <div class="nm-card p-8 text-center">
+                    <i class="fas fa-route text-6xl text-[var(--nm-accent)] mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Flights Module</h3>
+                    <p class="text-[var(--nm-text-muted)]">Select a submenu option to access flight data.</p>
+                </div>
+            </div>
+
+            <!-- Flights - Flight List -->
+            <div id="page-flights-list" class="page-content hidden">
+                <div class="nm-card">
+                    <div class="nm-card-header px-4 py-3 flex items-center justify-between">
+                        <h3 class="font-semibold flex items-center gap-2">
+                            <i class="fas fa-list"></i>
+                            Flight List
+                        </h3>
+                        <div class="flex items-center gap-4">
+                            <input type="text" placeholder="Search callsign..." class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-1 text-sm">
+                            <select class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-1 text-sm">
+                                <option>All Flights</option>
+                                <option>With CTOT</option>
+                                <option>Delayed</option>
+                                <option>Regulated</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="p-4 overflow-x-auto" style="max-height: 600px;">
+                        <table class="nm-table">
+                            <thead>
+                                <tr>
+                                    <th>Callsign</th>
+                                    <th>A/C</th>
+                                    <th>DEP</th>
+                                    <th>ARR</th>
+                                    <th>EOBT</th>
+                                    <th>CTOT</th>
+                                    <th>Delay</th>
+                                    <th>Regulation</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="flights-list-tbody">
+                                <tr>
+                                    <td class="font-mono">LOT123</td>
+                                    <td>B738</td>
+                                    <td>EPWA</td>
+                                    <td>EGLL</td>
+                                    <td class="font-mono">14:25</td>
+                                    <td class="font-mono text-yellow-400">14:35</td>
+                                    <td class="text-yellow-400">+10</td>
+                                    <td>EGLL_ARR_01</td>
+                                    <td><span class="badge badge-warning">REGULATED</span></td>
+                                    <td><button class="text-xs px-2 py-1 bg-[var(--nm-accent)] rounded">View</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flights - Flight Data -->
+            <div id="page-flights-data" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Flight Info -->
+                    <div class="lg:col-span-2 nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold">Flight Information</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="text-center py-8 text-[var(--nm-text-muted)]">
+                                <i class="fas fa-search text-4xl mb-4"></i>
+                                <p>Enter a callsign to view flight details</p>
+                                <input type="text" placeholder="Enter callsign (e.g., LOT123)" class="mt-4 bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-4 py-2 w-64">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Profile View -->
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold">Profile View</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="graph-placeholder rounded-lg h-64">
+                                <i class="fas fa-mountain text-4xl text-[var(--nm-border)]"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 6. AIRSPACE DATA -->
+            <!-- ==================== -->
+            <div id="page-airspace-data" class="page-content hidden">
+                <div class="nm-card p-8 text-center">
+                    <i class="fas fa-database text-6xl text-[var(--nm-accent)] mb-4"></i>
+                    <h3 class="text-xl font-semibold mb-2">Airspace Data Management</h3>
+                    <p class="text-[var(--nm-text-muted)]">Using EUD Information Exchange</p>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 7. SETTINGS -->
+            <!-- ==================== -->
+            <div id="page-settings" class="page-content hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold">Visual Settings</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span>Dark Mode</span>
+                                <input type="checkbox" checked class="w-5 h-5">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Compact Tables</span>
+                                <input type="checkbox" class="w-5 h-5">
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Show Animations</span>
+                                <input type="checkbox" checked class="w-5 h-5">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="nm-card">
+                        <div class="nm-card-header px-4 py-3">
+                            <h3 class="font-semibold">Other Settings</h3>
+                        </div>
+                        <div class="p-4 space-y-4">
+                            <div class="flex items-center justify-between">
+                                <span>Refresh Interval</span>
+                                <select class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-1">
+                                    <option>15 seconds</option>
+                                    <option selected>30 seconds</option>
+                                    <option>60 seconds</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Time Format</span>
+                                <select class="bg-[var(--nm-sidebar)] border border-[var(--nm-border)] rounded px-3 py-1">
+                                    <option selected>UTC</option>
+                                    <option>Local</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span>Sound Notifications</span>
+                                <input type="checkbox" class="w-5 h-5">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== -->
+            <!-- 8. HELP -->
+            <!-- ==================== -->
+            <div id="page-help" class="page-content hidden">
+                <div class="nm-card">
+                    <div class="nm-card-header px-4 py-3">
+                        <h3 class="font-semibold">Help & Documentation</h3>
+                    </div>
+                    <div class="p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg hover:bg-[var(--nm-sidebar-hover)] cursor-pointer">
+                                <i class="fas fa-book text-2xl text-[var(--nm-accent)] mb-3"></i>
+                                <h4 class="font-semibold mb-2">User Guide</h4>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Complete documentation for all features</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg hover:bg-[var(--nm-sidebar-hover)] cursor-pointer">
+                                <i class="fas fa-video text-2xl text-[var(--nm-accent)] mb-3"></i>
+                                <h4 class="font-semibold mb-2">Video Tutorials</h4>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Step-by-step video guides</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg hover:bg-[var(--nm-sidebar-hover)] cursor-pointer">
+                                <i class="fas fa-question-circle text-2xl text-[var(--nm-accent)] mb-3"></i>
+                                <h4 class="font-semibold mb-2">FAQ</h4>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Frequently asked questions</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg hover:bg-[var(--nm-sidebar-hover)] cursor-pointer">
+                                <i class="fas fa-code text-2xl text-[var(--nm-accent)] mb-3"></i>
+                                <h4 class="font-semibold mb-2">API Documentation</h4>
+                                <p class="text-sm text-[var(--nm-text-muted)]">CDM API reference and endpoints</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg hover:bg-[var(--nm-sidebar-hover)] cursor-pointer">
+                                <i class="fas fa-envelope text-2xl text-[var(--nm-accent)] mb-3"></i>
+                                <h4 class="font-semibold mb-2">Contact Support</h4>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Get help from the team</p>
+                            </div>
+                            <div class="bg-[var(--nm-sidebar)] p-4 rounded-lg hover:bg-[var(--nm-sidebar-hover)] cursor-pointer">
+                                <i class="fab fa-discord text-2xl text-[var(--nm-accent)] mb-3"></i>
+                                <h4 class="font-semibold mb-2">Discord Community</h4>
+                                <p class="text-sm text-[var(--nm-text-muted)]">Join our Discord server</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // ============================================
+        // VATSIM ATFCM - Network Manager Application
+        // ============================================
+
+        const REFRESH_INTERVAL_SECONDS = 30;
+
+        /**
+         * Application State Management
+         */
+        const AppState = {
+            currentPage: 'dashboard',
+            apiConnected: true,
+            lastUpdate: new Date(),
+            isLoggedIn: false,
+            user: null,
+            // Traffic data
+            onlineTrafficCount: null,
+            lastOnlineTrafficUpdate: null,
+            delayedTrafficCount: null,
+            // Active Regulations
+            activeRegulationsCount: null,
+            // Global refresh countdown
+            refreshCountdown: REFRESH_INTERVAL_SECONDS
+        };
+
+        /**
+         * Page title mappings
+         */
+        const PAGE_TITLES = {
+            'dashboard': 'Dashboard',
+            'atc-monitor': 'ATC Monitor',
+            'traffic': 'Traffic',
+            'traffic-fmp-dashboard': 'FMP Dashboard',
+            'traffic-fmp-general': 'FMP Dashboard - General Information',
+            'traffic-fmp-sectors': 'FMP Dashboard - Sectors Graphs',
+            'traffic-airspace-monitor': 'Airspace Monitor',
+            'traffic-airspace-load': 'Airspace Monitor - Traffic Load Graph',
+            'traffic-airspace-tl-td-rt': 'Airspace Monitor - TL/TD/RT Monitor',
+            'traffic-airspace-weight': 'Airspace Monitor - Traffic Weight',
+            'traffic-airspace-sector-data': 'Airspace Monitor - Sector Data Management',
+            'traffic-airspace-replay': 'Airspace Monitor - Replay Function',
+            'traffic-atc-config': 'ATC Configuration',
+            'traffic-atc-flow': 'ATC Configuration - Traffic Flow',
+            'traffic-atc-optimiser': 'ATC Configuration - Configuration Optimiser',
+            'traffic-atc-capacity': 'ATC Configuration - Capacity Manager',
+            'traffic-fmp-manager': 'FMP Manager',
+            'traffic-fmp-ecfmp': 'FMP Manager - ECFMP Restriction Input',
+            'traffic-fmp-atfm': 'FMP Manager - ATFM Regulations',
+            'traffic-fmp-scenarios': 'FMP Manager - Scenarios & Planning',
+            'traffic-fmp-tsa': 'FMP Manager - TSA/VLARA/AUP/UUP',
+            'traffic-fmp-neighbours': 'FMP Manager - Neighbour Sectors',
+            'traffic-fmp-bookings': 'FMP Manager - Bookings Section',
+            'airport': 'Airport',
+            'airport-monitor': 'Airport Monitor',
+            'airport-departure-list': 'Airport Monitor - Departure List',
+            'airport-tsat-ctot': 'Airport Monitor - TSAT & CTOT Display',
+            'airport-arrival-flow': 'Airport Monitor - Predicted Arrival Flow',
+            'airport-weather-notam': 'Airport Monitor - Weather & NOTAMs',
+            'airport-data-management': 'Airport Data Management',
+            'flights': 'Flights',
+            'flights-list': 'Flight List',
+            'flights-data': 'Flight Data',
+            'flights-data-info': 'Flight Data - Flight Information',
+            'flights-data-restriction': 'Flight Data - Restrictions',
+            'flights-data-profile': 'Flight Data - Profile View',
+            'airspace-data': 'Airspace Data Management',
+            'airspace-sector-capacity': 'Sector Capacity Data Editor',
+            'airspace-traffic-volumes': 'Sector Capacity - Traffic Volumes',
+            'airspace-sector-configs': 'Sector Capacity - Sector Configurations',
+            'airspace-profile-restrictions': 'Profile Restrictions Editor',
+            'settings': 'Settings',
+            'settings-visual': 'Settings - Visual Settings',
+            'settings-other': 'Settings - Other Settings',
+            'help': 'Help'
+        };
+
+        /**
+         * Update current time display in header
+         */
+        function updateTime() {
+            const now = new Date();
+            const utcTime = now.toUTCString().slice(17, 25);
+            const dateStr = now.toISOString().slice(0, 10);
+            document.getElementById('current-time').textContent = `${dateStr} ${utcTime} UTC`;
+        }
+
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        /**
+         * Page Navigation Handler
+         */
+        function navigateToPage(pageName) {
+            // Hide all page content
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.add('hidden');
+            });
+
+            // Try to find exact page match first
+            let pageElement = document.getElementById(`page-${pageName}`);
+            
+            // If not found, try to find parent page
+            if (!pageElement) {
+                const parts = pageName.split('-');
+                for (let i = parts.length - 1; i > 0; i--) {
+                    const parentPage = parts.slice(0, i).join('-');
+                    pageElement = document.getElementById(`page-${parentPage}`);
+                    if (pageElement) break;
+                }
+            }
+
+            if (pageElement) {
+                pageElement.classList.remove('hidden');
+            }
+
+            // Update page title
+            document.getElementById('page-title').textContent = PAGE_TITLES[pageName] || pageName;
+
+            // Update active state in sidebar
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            const activeItem = document.querySelector(`.sidebar-item[data-page="${pageName}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+            }
+
+            AppState.currentPage = pageName;
+        }
+
+        /**
+         * Toggle submenu visibility
+         */
+        function toggleSubmenu(menuItem) {
+            const submenu = menuItem.nextElementSibling;
+            const arrow = menuItem.querySelector('.submenu-arrow');
+            
+            if (submenu && submenu.classList.contains('submenu')) {
+                submenu.classList.toggle('open');
+                if (arrow) {
+                    arrow.style.transform = submenu.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0)';
+                }
+            }
+        }
+
+        /**
+         * Toggle nested submenu
+         */
+        function toggleNestedSubmenu(menuItem) {
+            const submenu = menuItem.nextElementSibling;
+            const arrow = menuItem.querySelector('.nested-arrow');
+            
+            if (submenu && submenu.classList.contains('submenu-nested')) {
+                submenu.classList.toggle('open');
+                if (arrow) {
+                    arrow.style.transform = submenu.classList.contains('open') ? 'rotate(90deg)' : 'rotate(0)';
+                }
+            }
+        }
+
+        /**
+         * Initialize sidebar event listeners
+         */
+        function initializeSidebar() {
+            document.querySelectorAll('.sidebar-item').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    const pageName = this.getAttribute('data-page');
+                    const hasSubmenu = this.getAttribute('data-has-submenu') === 'true';
+                    const hasNested = this.getAttribute('data-has-nested') === 'true';
+
+                    if (hasSubmenu) {
+                        toggleSubmenu(this);
+                        return;
+                    }
+
+                    if (hasNested) {
+                        toggleNestedSubmenu(this);
+                        return;
+                    }
+
+                    if (pageName) {
+                        navigateToPage(pageName);
+                    }
+                });
+            });
+        }
+
+        /**
+         * Initialize tab functionality
+         */
+        function initializeTabs() {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const tabName = this.getAttribute('data-tab');
+                    const parent = this.closest('.nm-card');
+                    
+                    // Update active tab button
+                    parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Update active tab content
+                    parent.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    const tabContent = parent.querySelector(`#tab-${tabName}`);
+                    if (tabContent) {
+                        tabContent.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        /**
+         * Update refresh countdown display
+         */
+        function updateRefreshCountdownDisplay() {
+            const el = document.getElementById('refresh-countdown');
+            if (el) {
+                el.textContent = `${AppState.refreshCountdown}s`;
+            }
+        }
+
+        /**
+         * Fetch online traffic from CDM API
+         */
+        async function fetchOnlineTraffic() {
+            try {
+                const response = await fetch('https://cdm-server-production.up.railway.app/ifps/allStatus', {
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+
+                const data = await response.json();
+                const items = Array.isArray(data) ? data : (data.results || []);
+                return items.length;
+            } catch (error) {
+                console.error('Failed to fetch online traffic:', error);
+                return null;
+            }
+        }
+
+        /**
+         * Fetch ECFMP restrictions
+         */
+        async function fetchRestrictions() {
+            try {
+                const response = await fetch('https://cdm-server-production.up.railway.app/etfms/restrictions', {
+                    mode: 'cors',
+                    cache: 'no-cache',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+
+                const data = await response.json();
+                const items = Array.isArray(data) ? data : (data.results || []);
+                return items;
+            } catch (error) {
+                console.error('Failed to fetch restrictions:', error);
+                return [];
+            }
+        }
+
+        /**
+         * Update dashboard statistics
+         */
+        async function updateDashboardStats() {
+            // Online Traffic
+            const countEl = document.getElementById('online-traffic-count');
+            const changeEl = document.getElementById('online-traffic-change');
+            
+            const newCount = await fetchOnlineTraffic();
+            if (newCount !== null && countEl) {
+                const prevCount = AppState.onlineTrafficCount;
+                AppState.onlineTrafficCount = newCount;
+                countEl.textContent = newCount.toLocaleString();
+
+                if (prevCount !== null && changeEl) {
+                    const delta = newCount - prevCount;
+                    const pct = prevCount > 0 ? Math.round((delta / prevCount) * 100) : 0;
+                    
+                    if (delta > 0) {
+                        changeEl.innerHTML = `<i class="fas fa-arrow-up"></i> +${pct}% from last refresh`;
+                        changeEl.className = 'text-xs mt-2 text-green-400';
+                    } else if (delta < 0) {
+                        changeEl.innerHTML = `<i class="fas fa-arrow-down"></i> ${pct}% from last refresh`;
+                        changeEl.className = 'text-xs mt-2 text-red-400';
+                    } else {
+                        changeEl.innerHTML = `<i class="fas fa-minus"></i> No change`;
+                        changeEl.className = 'text-xs mt-2 text-yellow-400';
+                    }
+                } else if (changeEl) {
+                    changeEl.innerHTML = `<i class="fas fa-check"></i> Data loaded`;
+                    changeEl.className = 'text-xs mt-2 text-green-400';
+                }
+            }
+
+            // Update ECFMP restrictions table
+            const restrictions = await fetchRestrictions();
+            const tbody = document.getElementById('ecfmp-restrictions-tbody');
+            
+            if (tbody && restrictions.length > 0) {
+                const now = new Date();
+                const nowStr = now.getUTCHours().toString().padStart(2, '0') + 
+                              now.getUTCMinutes().toString().padStart(2, '0');
+
+                tbody.innerHTML = restrictions.map(item => {
+                    const id = item.id || 'N/A';
+                    const airspace = item.airspace || 'N/A';
+                    const reason = item.reason && item.reason !== 'NONE' ? item.reason : '-';
+                    const type = item.type || 'N/A';
+                    const start = (item.start || '0000').toString().padStart(4, '0');
+                    const end = (item.end || '2359').toString().padStart(4, '0');
+                    const startFormatted = start.slice(0, 2) + ':' + start.slice(2);
+                    const endFormatted = end.slice(0, 2) + ':' + end.slice(2);
+                    
+                    const s = parseInt(start, 10);
+                    const e = parseInt(end, 10);
+                    const n = parseInt(nowStr, 10);
+                    const active = s <= e ? (n >= s && n <= e) : (n >= s || n <= e);
+
+                    return `
+                        <tr>
+                            <td class="font-mono">${id}</td>
+                            <td>${airspace}</td>
+                            <td>${reason}</td>
+                            <td>${type}</td>
+                            <td class="font-mono">${startFormatted} - ${endFormatted}</td>
+                            <td>
+                                <span class="status-indicator ${active ? 'status-green' : 'status-red'}"></span>
+                                ${active ? 'Active' : 'Inactive'}
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } else if (tbody) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-sm text-[var(--nm-text-muted)]">
+                            No active restrictions
+                        </td>
+                    </tr>
+                `;
+            }
+
+            // Mock data for demo
+            document.getElementById('delayed-traffic-count').textContent = '89';
+            document.getElementById('delayed-traffic-change').innerHTML = '<i class="fas fa-arrow-up"></i> +5 in last 30min';
+            document.getElementById('most-affected-sector').textContent = 'EPWW_S';
+            document.getElementById('most-affected-sector-info').innerHTML = '32 delayed flights';
+            document.getElementById('most-affected-airport').textContent = 'EPWA';
+            document.getElementById('most-affected-airport-info').innerHTML = '18 delayed departures';
+        }
+
+        /**
+         * Refresh all dynamic data
+         */
+        async function refreshData() {
+            await updateDashboardStats();
+        }
+
+        /**
+         * Start global refresh timer
+         */
+        function startGlobalRefreshTimer() {
+            updateRefreshCountdownDisplay();
+
+            setInterval(async () => {
+                AppState.refreshCountdown -= 1;
+
+                if (AppState.refreshCountdown <= 0) {
+                    await refreshData();
+                    AppState.refreshCountdown = REFRESH_INTERVAL_SECONDS;
+                }
+
+                updateRefreshCountdownDisplay();
+            }, 1000);
+        }
+
+        /**
+         * Initialize application
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSidebar();
+            initializeTabs();
+            console.log('VATSIM ATFCM Network Manager v2.0 initialized');
+
+            // Initial data load
+            refreshData();
+
+            // Start refresh timer
+            startGlobalRefreshTimer();
+
+            // Login button handler
+            document.getElementById('login-btn').addEventListener('click', function() {
+                alert('VATSIM SSO login will be implemented here.\nThis will redirect to VATSIM OAuth.');
+            });
+        });
+    </script>
+</body>
+</html>
