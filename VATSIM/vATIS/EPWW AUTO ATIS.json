@@ -1,6 +1,6 @@
 {
   "name": "EPWW ATIS 22 Jan 2026",
-  "id": "85a0e15a-9eb7-4116-984d-f1f73f27e31d",
+  "id": "c390cd83-ff6f-4706-b901-ed6688e108de",
   "updateUrl": "https://raw.githubusercontent.com/DeathPlanet99/JKhold/refs/heads/main/VATSIM/vATIS/EPWW%20AUTO%20ATIS.json",
   "updateSerial": 2026012201,
   "stations": [
@@ -21,8 +21,8 @@
             50
           ],
           "template": {
-            "text": "{type} {day}{time} ",
-            "voice": ". {special} MET REPORT TIME {time}."
+            "text": "TIME {time} ",
+            "voice": ". {special} TIME {time}."
           }
         },
         "surfaceWind": {
@@ -33,38 +33,38 @@
           },
           "standard": {
             "template": {
-              "text": "{wind_dir}{wind_spd}KT",
-              "voice": "WIND {wind_dir} DEGREES {wind_spd} KNOTS"
+              "text": "WIND {wind_dir} DEG, {wind_spd}KT",
+              "voice": ". WIND. {wind_dir} DEGREES, {wind_spd} KNOTS"
             }
           },
           "standardGust": {
             "template": {
-              "text": "{wind_dir}{wind_spd}G{wind_gust}KT",
-              "voice": "WIND {wind_dir} DEGREES {wind_spd} KNOTS GUSTS {wind_gust} KNOTS"
+              "text": "WIND {wind_dir} DEG, {wind_spd}G{wind_gust}KT",
+              "voice": ". WIND. {wind_dir} DEGREES, {wind_spd} KNOTS, MAXIMUM {wind_gust} "
             }
           },
           "variable": {
             "template": {
-              "text": "VRB{wind_spd}KT",
-              "voice": "WIND VARIABLE {wind_spd} KNOTS"
+              "text": "WIND VRB{wind_spd}KT",
+              "voice": "WIND VARIABLE AT {wind_spd} KNOTS"
             }
           },
           "variableGust": {
             "template": {
-              "text": "VRB{wind_spd}G{wind_gust}KT",
-              "voice": "WIND VARIABLE {wind_spd} KNOTS GUSTS {wind_gust} KNOTS"
+              "text": "WIND VRB{wind_spd}G{wind_gust}KT",
+              "voice": ". WIND VARIABLE AT {wind_spd} KNOTS, MAX {wind_gust} KNOTS"
             }
           },
           "variableDirection": {
             "template": {
-              "text": "{wind_vmin}V{wind_vmax}",
-              "voice": "VARIABLE BETWEEN {wind_vmin} AND {wind_vmax} DEGREES"
+              "text": ", VRB BTN {wind_vmin} AND {wind_vmax} DEG",
+              "voice": "VARIABLE BETWEEN {wind_vmin} AND {wind_vmax} DEGREES."
             }
           },
           "calm": {
             "calmWindSpeed": 0,
             "template": {
-              "text": "{wind}",
+              "text": "WIND {wind}",
               "voice": "WIND CALM"
             }
           }
@@ -83,7 +83,7 @@
           "includeVisibilitySuffix": true,
           "metersCutoff": 4995,
           "template": {
-            "text": "{visibility}",
+            "text": "VIS {visibility}",
             "voice": "VISIBILITY {visibility}"
           }
         },
@@ -1825,7 +1825,7 @@
             }
           },
           "template": {
-            "text": "{weather}",
+            "text": "WX {weather}",
             "voice": "PRESENT WEATHER {weather}"
           }
         },
@@ -1896,7 +1896,7 @@
             "TCU": "towering cumulus"
           },
           "template": {
-            "text": "{clouds}",
+            "text": "CLD {clouds}",
             "voice": "CLOUDS {clouds}"
           }
         },
@@ -1904,7 +1904,7 @@
           "usePlusPrefix": false,
           "speakLeadingZero": false,
           "template": {
-            "text": "T{temp}",
+            "text": "T {temp:#}",
             "voice": "TEMPERATURE {temp}"
           }
         },
@@ -1912,24 +1912,24 @@
           "usePlusPrefix": false,
           "speakLeadingZero": false,
           "template": {
-            "text": "DP{dewpoint}",
+            "text": "DP {dewpoint:#}",
             "voice": "DEWPOINT {dewpoint}"
           }
         },
         "altimeter": {
           "pronounceDecimal": false,
           "template": {
-            "text": "QNH{altimeter}",
+            "text": "QNH {altimeter}",
             "voice": "QNH {altimeter}"
           }
         },
         "trend": {
           "nosigText": "NOSIG",
-          "nosigVoice": "NOSIG",
+          "nosigVoice": "NO-SIGG.",
           "becomingText": "BECMG",
-          "becomingVoice": "Becoming",
+          "becomingVoice": "Becoming.",
           "temporaryText": "TEMPO",
-          "temporaryVoice": "Temporary",
+          "temporaryVoice": "Temporary.",
           "template": {}
         },
         "windShear": {
@@ -1942,7 +1942,7 @@
         "transitionLevel": {
           "values": [
             {
-              "low": 943,
+              "low": 942,
               "high": 994,
               "altitude": 90
             },
@@ -1953,20 +1953,20 @@
             }
           ],
           "template": {
-            "text": "TRL {trl}",
+            "text": "TRANSITION LEVEL {trl}",
             "voice": ". TRANSITION LEVEL {trl}."
           }
         },
         "notams": {
           "template": {
             "text": "{notams}",
-            "voice": "{notams}"
+            "voice": "{notams}."
           }
         },
         "closingStatement": {
           "autoIncludeClosingStatement": true,
           "template": {
-            "text": "",
+            "text": "END OF EPWA {letter}",
             "voice": "END OF WARSAW INFORMATION {letter|word}."
           }
         }
@@ -1982,11 +1982,11 @@
       },
       "presets": [
         {
-          "id": "9df269ab-b265-4273-8a19-458f85b9bf42",
-          "name": "22L",
+          "id": "dff9226b-a23e-4ab0-bf3c-5bd75d8b74b4",
+          "name": "DEP RWY 29 ARR 33Z",
           "airportConditions": "",
           "notams": "",
-          "template": "[FACILITY] ARR ATIS [ATIS_CODE]\r\n[TIME] PAUSE\r\nEXPECT ILS APP PAUSE\r\nRWY IN USE 22L PAUSE\r\nRUNWAY 22L CONDITION REPORT AT_ [TIME] PAUSE\r\nRUNWAY CONDITION CODES PAUSE\r\n[ARPT_COND] PAUSE\r\n[TL] PAUSE\r\nAFTER LANDING EXPEDITE VACATING RWY PAUSE\r\n[SURFACE_WIND]\r\n[VIS]\r\n[RVR]\r\n[PRESENT_WX]\r\n[CLOUDS]\r\n[TEMP]  [DEW]\r\n[PRESSURE]\r\n[RECENT_WX]\r\n[TREND]\r\n[NOTAMS] PAUSE\r\n[CLOSING]",
+          "template": "@EPWA [ATIS_CODE]\r\n[TIME]\r\n@ARR33Z\r\n@DEP29\r\nRWY 33 RUNWAY CONDITION CODES\r\n[ARPT_COND]\r\n[TL]\r\n[SURFACE_WIND]\r\n[VIS]\r\n[RVR]\r\n[PRESENT_WX]\r\n[CLOUDS]\r\n[TEMP]\r\n[DEW]\r\n[PRESSURE]\r\n[RECENT_WX]\r\n[TREND]\r\n[NOTAMS]\r\n[CLOSING]",
           "externalGenerator": {
             "enabled": false,
             "textUrl": "",
@@ -1998,8 +1998,8 @@
           }
         },
         {
-          "id": "dff9226b-a23e-4ab0-bf3c-5bd75d8b74b4",
-          "name": "DEP RWY 29 ARR 33Z",
+          "id": "9df269ab-b265-4273-8a19-458f85b9bf42",
+          "name": "22L",
           "airportConditions": "",
           "notams": "",
           "template": "[FACILITY] ARR ATIS [ATIS_CODE]\r\n[TIME] PAUSE\r\nEXPECT ILS APP PAUSE\r\nRWY IN USE 22L PAUSE\r\nRUNWAY 22L CONDITION REPORT AT_ [TIME] PAUSE\r\nRUNWAY CONDITION CODES PAUSE\r\n[ARPT_COND] PAUSE\r\n[TL] PAUSE\r\nAFTER LANDING EXPEDITE VACATING RWY PAUSE\r\n[SURFACE_WIND]\r\n[VIS]\r\n[RVR]\r\n[PRESENT_WX]\r\n[CLOUDS]\r\n[TEMP]  [DEW]\r\n[PRESSURE]\r\n[RECENT_WX]\r\n[TREND]\r\n[NOTAMS] PAUSE\r\n[CLOSING]",
@@ -2016,94 +2016,74 @@
       ],
       "contractions": [
         {
-          "variableName": "TRND",
-          "text": "TREND",
-          "voice": ""
+          "variableName": "EPWA",
+          "text": "EPWA ATIS",
+          "voice": "THIS IS WARSAW INFORMATION"
         },
         {
-          "variableName": "EDDH",
-          "text": "ATIS EDDH",
-          "voice": "THIS IS HAMBURG INFORMATION"
+          "variableName": "DEP11",
+          "text": "DEP RWY 11.",
+          "voice": "DEPARTURE RUNWAY ^11."
         },
         {
-          "variableName": "LVP_WITHOUT_GUIDED_TAKEOFF",
-          "text": "LOW VIS PROC IN OPERATION CAT II AND III AVBL",
-          "voice": "LOW-VISIBILITY PROCEDURES IN OPERATION, CAT TWO AND THREE AVAILABLE."
+          "variableName": "DEP15",
+          "text": "DEP RWY 15.",
+          "voice": "DEPARTURE RUNWAY ^15."
         },
         {
-          "variableName": "LVP_WITH_GUIDED_TAKEOFF",
-          "text": "LOW VIS PROC IN OPERATION CAT III AND GUIDED TAKE-OFF AVBL",
-          "voice": " LOW-VISIBILITY PROCEDURES IN OPERATION, CAT THREE AND GUIDED TAKE-OFF AVAILABLE."
+          "variableName": "DEP29",
+          "text": "DEP RWY 29.",
+          "voice": "DEPARTURE RUNWAY ^29."
         },
         {
-          "variableName": "REQ",
-          "text": "REQ",
-          "voice": "REQUEST"
+          "variableName": "DEP33",
+          "text": "DEP RWY 33.",
+          "voice": "DEPARTURE RUNWAY ^33."
         },
         {
-          "variableName": "CLR",
-          "text": "CLR",
-          "voice": "CLEARANCE"
+          "variableName": "ARR11X",
+          "text": "EXP N ARR ILS X APCH FOR RWY 11.",
+          "voice": "EXPECT NOVEMBER ARRIVAL ILS X-RAY APPROACH FOR RUNWAY 11."
         },
         {
-          "variableName": "ACTIVE_LDG23_TKOF33",
-          "text": "LDG 23 TKOF 33",
-          "voice": "RUNWAYS IN USE FOR LANDING ^23 AND TAKEOFF ^33."
+          "variableName": "ARR11Y",
+          "text": "EXP N ARR ILS Y APCH FOR RWY 11.",
+          "voice": "EXPECT NOVEMBER ARRIVAL ILS YANKEE APPROACH FOR RUNWAY 11."
         },
         {
-          "variableName": "ACTIVE_LDG05_TKOF33",
-          "text": "LDG 05 TKOF 33",
-          "voice": "RUNWAYS IN USE FOR LANDING ^05 AND TAKEOFF ^33."
+          "variableName": "ARR11Z",
+          "text": "EXP N ARR ILS Z APCH FOR RWY 11.",
+          "voice": "EXPECT NOVEMBER ARRIVAL ILS ZULU APPROACH FOR RUNWAY 11."
         },
         {
-          "variableName": "ACTIVE_LDG15_TKOF23",
-          "text": "LDG 15 TKOF 23",
-          "voice": "RUNWAYS IN USE FOR LANDING ^15 AND TAKEOFF ^23."
+          "variableName": "ARR15",
+          "text": "EXP P ARR RNP APCH FOR RWY 15.",
+          "voice": "EXPECT PAPA ARRIVAL RNP APPROACH FOR RUNWAY 15."
         },
         {
-          "variableName": "ACTIVE_LDG15_TKOF05",
-          "text": "LDG 15 TKOF 05",
-          "voice": "RUNWAYS IN USE FOR LANDING ^15 AND TAKEOFF ^05."
+          "variableName": "ARR29",
+          "text": "EXP V ARR RNP APCH FOR RWY 29.",
+          "voice": "EXPECT VICTOR ARRIVAL RNP APPROACH FOR RUNWAY 29."
         },
         {
-          "variableName": "ACTIVE_05_SINGLE",
-          "text": "RWY 05",
-          "voice": "RUNWAY IN USE ^05."
+          "variableName": "ARR33X",
+          "text": "EXP U ARR ILS X APCH FOR RWY 33.",
+          "voice": "EXPECT UNIFORM ARRIVAL ILS X-RAY APPROACH FOR RUNWAY 33."
         },
         {
-          "variableName": "ACTIVE_15_SINGLE",
-          "text": "RWY 15",
-          "voice": "RUNWAY IN USE ^15."
+          "variableName": "ARR33Y",
+          "text": "EXP U ARR ILS Y APCH FOR RWY 33.",
+          "voice": "EXPECT UNIFORM ARRIVAL ILS YANKEE APPROACH FOR RUNWAY 33."
         },
         {
-          "variableName": "ACTIVE_23_SINGLE",
-          "text": "RWY 23",
-          "voice": "RUNWAY IN USE ^23."
+          "variableName": "ARR33Z",
+          "text": "EXP U ARR ILS Z APCH FOR RWY 33",
+          "voice": "EXPECT UNIFORM ARRIVAL ILS ZULU APPROACH FOR RUNWAY 33."
         },
         {
-          "variableName": "ACTIVE_33_SINGLE",
-          "text": "RWY 33",
-          "voice": "RUNWAY IN USE ^33."
-        },
-        {
-          "variableName": "ILS",
-          "text": "ILS APCH",
-          "voice": "FOR ILS APPROACH."
-        },
-        {
-          "variableName": "RNP",
-          "text": "RNP APCH",
-          "voice": "FOR RNP APPROACH."
-        },
-        {
-          "variableName": "2000FT",
-          "text": "2000FT",
-          "voice": "TWO THOUSAND FEET"
-        },
-        {
-          "variableName": "ACTIVE_LDG15_TKOF33",
-          "text": "LDG 15 TKOF 33",
-          "voice": "RUNWAYS IN USE FOR LANDING ^15 AND TAKEOFF ^33."
+          "variableName": "LVP",
+          "text": "LOW VIS PROC IN OPS",
+          "voice": "LOW VISIBILITY PROCEDURES IN OPERATION"
         },
         {
           "variableName": "VDGS",
@@ -2114,6 +2094,11 @@
           "variableName": "TOBT",
           "text": "TOBT",
           "voice": "TARGET OFF-BLOCK TIME"
+        },
+        {
+          "variableName": "CLR",
+          "text": "CLR",
+          "voice": "CLEARANCE"
         },
         {
           "variableName": "COND",
@@ -2218,30 +2203,45 @@
       ],
       "airportConditionDefinitions": [
         {
-          "text": "\r\n@LVP_WITHOUT_GUIDED_TAKEOFF",
+          "text": "\r\n@LVP",
           "ordinal": 1,
-          "enabled": false
-        },
-        {
-          "text": "\r\n@LVP_WITH_GUIDED_TAKEOFF",
-          "ordinal": 2,
           "enabled": false
         }
       ],
       "notamDefinitions": [
         {
-          "text": "WHEN AIRBORNE CONTACT APPROACH ON 128.805.",
+          "text": "\r\nWHEN AIRBORNE CONTACT APPROACH ON 128.805.",
           "ordinal": 1,
           "enabled": true
         },
         {
-          "text": "WHEN AIRBORNE CONTACT RADAR ON 125.450.",
+          "text": "\r\nWHEN AIRBORNE CONTACT RADAR ON 125.450.",
           "ordinal": 2,
           "enabled": false
         },
         {
-          "text": "\r\nA-CDM IN USE. ALL DEPARTURES SHALL SUBMIT THEIR TOBT @VDGS.",
+          "text": "\r\nREPORT READY FOR STARTUP ON DELIVERY 121.605.",
           "ordinal": 3,
+          "enabled": false
+        },
+        {
+          "text": "\r\n@CLR AVAILABLE VIA DATALINK. OR CONTACT DELIVERY 121.605.",
+          "ordinal": 3,
+          "enabled": false
+        },
+        {
+          "text": "\r\n@CLR AVAILABLE VIA DATALINK. OR CONTACT GROUND 121.905.",
+          "ordinal": 3,
+          "enabled": false
+        },
+        {
+          "text": "\r\n@CLR AVAILABLE VIA DATALINK. OR CONTACT TOWER 118.305.",
+          "ordinal": 3,
+          "enabled": false
+        },
+        {
+          "text": "\r\nA-CDM IN USE. ALL DEPARTURES SHALL SUBMIT THEIR TOBT @VDGS.",
+          "ordinal": 4,
           "enabled": false
         }
       ]
