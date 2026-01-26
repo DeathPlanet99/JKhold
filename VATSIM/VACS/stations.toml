@@ -26,7 +26,6 @@ include = [
     "EDWW_CTR",
     "EDWW*B*CTR",
     "EDWW*F*CTR",
-    "EDWW*K*CTR",
     "EDWW*M*CTR",
     "EDUU*H*CTR",
     "EDUU*O*CTR",
@@ -53,6 +52,7 @@ include = [
     "EY*CTR",
     "EYKA_I*_APP",
     "LK*CTR",
+    "LKPR*APP",
     "LKMT*APP",
     "LZBB*CTR",
     "LZTT*TWR",
@@ -133,8 +133,8 @@ grouping = "FirAndIcao"
 "120.255" = "EPWR TWR"
 "118.755" = "EPZG TWR"
 "132.830" = "EDAH TWR"
-"119.630" = "EDDB N"
-"126.425" = "EDDB S"
+"119.630" = "EDDB APP N"
+"126.425" = "EDDB APP S"
 "120.630" = "EDDB S DEP"
 "125.875" = "EDDC SAS"
 "126.175" = "EDDP TRS"
@@ -142,16 +142,16 @@ grouping = "FirAndIcao"
 "118.235" = "EDMM HAL"
 "133.565" = "EDMM HOF"
 "124.960" = "EDMM MEI"
-"128.235" = "EDUU H"
-"133.035" = "EDUU O"
-"126.785" = "EDUU OH"
+"128.235" = "EDUU H12"
+"133.035" = "EDUU O12"
+"126.785" = "EDUU O22"
 "133.860" = "EDUU SAL"
 "133.285" = "EDUU SPE"
 "133.725" = "EDWW ACC"
 "123.225" = "EDWW B"
-"136.450" = "EDWW F"
-"136.050" = "EDWW K"
-"124.175" = "EDWW M"
+"136.450" = "EDWW FLG"
+"136.050" = "EDWW MAR"
+"124.175" = "EDWW MRZ"
 "135.290" = "EKDK A"
 "136.555" = "EKDK ACC"
 "128.215" = "EKDK C"
@@ -169,9 +169,12 @@ grouping = "FirAndIcao"
 "132.280" = "EYVL U"
 "127.125" = "LKAA ACC"
 "126.100" = "LKAA FIS"
+"135.135" = "LKAA L"
 "127.825" = "LKAA N"
 "124.050" = "LKAA R"
-"124.775" = "LKAA U"
+"133.410" = "LKAA S"
+"133.425" = "LKAA U"
+"127.575" = "LKPR APP"
 "119.375" = "LKMT APP"
 "134.475" = "LZBB ACC"
 "124.300" = "LZBB FIS"
@@ -184,8 +187,8 @@ grouping = "FirAndIcao"
 "127.700" = "UMBB TWR"
 "123.700" = "UMKK ACC"
 "135.700" = "UMMV ACC"
-"119.125" = "UMMV N"
 "124.825" = "UMMV W"
+"119.125" = "UMMV N"
 
 
 [stations.profiles.EPWW_TWR]
@@ -380,7 +383,7 @@ grouping = "None"
 "129.255" = "TWR KT"
 "135.405" = "DIR KT"
 "126.805" = "TWR RZ"
-"118.605" = "POBIEDNIK RADIO"
+"118.605" = "RADIO KP"
 
 [stations.profiles.EPKT_TWR]
 include =  [
@@ -438,8 +441,8 @@ grouping = "None"
 "126.530" = "DIR KK"
 "123.255" = "TWR KK"
 "126.805" = "TWR RZ"
-"120.080" = "KATOWICE RADIO"
-"118.260" = "GLIWICE RADIO"
+"120.080" = "RADIO KM"
+"118.260" = "RADIO GL"
 
 [stations.profiles.EPMO_TWR]
 include = [
@@ -490,7 +493,7 @@ grouping = "None"
 "118.775" = "FIS WA N"
 "119.450" = "FIS WA S"
 "118.305" = "TWR WA"
-"119.180" = "BABICE INFO"
+"119.180" = "INFO BC"
 
 [stations.profiles.EPPO_TWR]
 include = [
@@ -591,7 +594,7 @@ grouping = "None"
 "135.405" = "DIR KT"
 "123.255" = "TWR KK"
 "129.255" = "TWR KT"
-"119.105" = "MIELEC INFO"
+"119.105" = "INFO ML"
 
 [stations.profiles.EPWA_TWR]
 include = [
@@ -640,7 +643,7 @@ grouping = "None"
 "118.775" = "FIS WA N"
 "119.450" = "FIS WA S"
 "123.930" = "TWR MO"
-"119.180" = "BABICE INFO"
+"119.180" = "INFO BC"
 
 [stations.profiles.EPWR_TWR]
 include = [
@@ -704,7 +707,6 @@ include = [
     "EDWW_CTR",
     "EDWW*B*CTR",
     "EDWW*F*CTR",
-    "EDWW*K*CTR",
     "EDWW*M*CTR",
     "EDUU*H*CTR",
     "EDUU*O*CTR",
@@ -801,14 +803,15 @@ grouping = "Icao"
 "118.235" = "EDMM HAL"
 "133.565" = "EDMM HOF"
 "124.960" = "EDMM MEI"
+"134.150" = "EDMM ZUG"
 "133.725" = "EDWW ACC"
 "123.225" = "EDWW B"
-"136.450" = "EDWW F"
-"136.050" = "EDWW K"
-"124.175" = "EDWW M"
-"133.035" = "EDUU O"
-"126.785" = "EDUU OH"
-"128.235" = "EDUU H"
+"136.450" = "EDWW FLG"
+"136.050" = "EDWW MAR"
+"124.175" = "EDWW MRZ"
+"133.035" = "EDUU O12"
+"126.785" = "EDUU O22"
+"128.235" = "EDUU H12"
 "133.860" = "EDUU SAL"
 "133.285" = "EDUU SPE"
 "135.985" = "ESMM 9"
