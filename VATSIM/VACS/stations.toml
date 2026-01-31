@@ -17,7 +17,7 @@ grouping = "None"
 
 [stations.profiles.Default.aliases]
 
-[stations.profiles.EPWW_RADAR]
+[stations.profiles.1_EPWW_RADAR]
 include = [
     "EP*",
     "EDMM*G*CTR",
@@ -68,6 +68,7 @@ exclude = [
     "LKAA*S*CTR",
     "LKAA*W*CTR",
     "UMMV*S*CTR",
+    "EDMM_NDG_CTR",
 ]
 priority = [
     "EPWW*",
@@ -83,7 +84,7 @@ priority = [
 frequencies = "ShowAll"
 grouping = "FirAndIcao"
 
-[stations.profiles.EPWW_RADAR.aliases]
+[stations.profiles.1_EPWW_RADAR.aliases]
 "125.450" = "ACC (BB)"
 "130.625" = "ACC HI"
 "127.025" = "ACC B"
@@ -658,6 +659,7 @@ exclude = [
 ]
 priority = [
     "EPWR*DEL",
+    "EPWR*GND",
     "EPWR*TWR",
     "EP*_TWR",
     "EPPO_S?_APP",
@@ -674,7 +676,8 @@ frequencies = "ShowAll"
 grouping = "None"
 
 [stations.profiles.EPWR_TWR.aliases]
-"121.805" = "DEL WR"
+"124.565" = "DEL WR"
+"121.805" = "GND WR"
 "120.255" = "TWR WR"
 "134.875" = "FIS EPWW"
 "125.450" = "ACC (BB)"
@@ -721,7 +724,9 @@ include = [
     "EDDP*TRS*APP",
     "EKRN*TWR",
 ]
-exclude = []
+exclude = [
+        "EDMM_NDG_CTR",
+]
 priority = [
     "EP*_TWR",
     "EP*_APP",
